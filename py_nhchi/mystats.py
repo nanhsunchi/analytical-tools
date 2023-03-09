@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy import signal, interpolate
 
 def movingavg(x, m, ncrt):
@@ -149,3 +150,58 @@ def lpass_NaN(x, delt, cutt, npole):
     hl = hl*np.conj(hl)
 
     return yl,ff,hl
+
+def bandpass(x,delt,lowcutt,higcutt,npole):
+    # From Ren-Chieh's lienbandpass.m
+    # mybandpass.m calls lienbandpass.m. 
+    # The lienbandpass.m is the main bandpass filter
+    # BANDX = BANDPASS(X,DT,LCTIME,HCTIME,NPOLE,plotind,FILTERTYPE)
+    #               BANDX : BANDPASSED TIME SERIES
+    #                X : ORIGINAL TIME SERIES
+    #           LCTIME : LOWBOUND CUTOFF TIME     
+    #           HCTIME : HIGHBOUND CUTOFF TIME     
+    #            NPOLE : # OF POLES FOR THE NONLINEAR FILTER
+    ###------------------------------------------------------------
+    ### define the sampling frequency and cutoff frequency band ###
+    ###------------------------------------------------------------
+    mx = np.mean(x)
+    x= x-mx
+    fs = 1/delt
+    lowband = 2*delt/lowcutt
+    higband = 2*delt/higcutt
+    lband = [lowband, higband]
+    # time = np.arange(0,len(x),1)*delt #(0:(length(x)-1))*delt;
+    # print('lowband, highband',lband)
+    ###------------------------------------------------------------
+    ### design Butterworth filter                               ###
+    ###------------------------------------------------------------
+    [cl,ch] = signal.butter(npole,lband,btype='bandpass')
+    
+    nfreq = 100000
+    ff = 0.5*fs*np.arange(0,nfreq,1)/nfreq #(0:nfreq-1)/(nfreq);
+    _,hl = signal.freqz(cl,ch,nfreq)
+    hl = hl*np.conj(hl)
+    minind = np.min( np.where(hl>=0.8)[0] )
+    maxind = np.max( np.where(hl>=0.8)[0] )
+    
+    minff = ff[minind]
+    maxff = ff[maxind]
+    ###------------------------------------------------------------
+    ### apply filter twice to avoid phase shift                 ###
+    ###------------------------------------------------------------
+    i = np.arange(1,len(x)+1,1)
+    y = signal.lfilter(cl,ch,x)
+    # plt.plot(i,x,i,y)
+    z0 = y[::-1]
+    z = signal.lfilter(cl,ch,z0)
+    w = z[::-1]
+    wtest = signal.filtfilt(cl,ch,x)
+    xband = [lowband/2/delt, lowband/2/delt, higband/2/delt, higband/2/delt]
+    # plt.plot(ff[2:nfreq+1], hl[2:nfreq+1],label='0')
+    ### y is the first filtered output. z is the second filtered output.
+    # w is the rearranged z. It is close to filtfilt(cl,ch,x)
+    # plt.plot(i,x,i,w,i,wtest)
+    # plt.legend(['data','2nd filter output','filtfilt'])
+    # plt.savefig('data_2ndfilter_filtfilt.png',dpi=400,bbox_inches='tight',transparent='True')
+
+    return w, minff, maxff, ff, hl
