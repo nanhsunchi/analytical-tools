@@ -41,6 +41,9 @@ def load_SD_nc_arctic2019(year, SD_name):
     longitude = ds.variables[lon_name[sd]][:]
     latitude = ds.variables[lat_name[sd]][:]
     depth = ds.variables[depth_name[sd]][:]
+    z0 = 6 # the top bin of 2018 & 2019 saildrone ADCP is at 6 m. It is determined by the depth of the transducer (-1.8 m) and the blanking distance (4.2 m).
+    dz = z0-np.min(depth[0])
+    depth = depth+dz
     u = np.squeeze(ds.variables[u_name[sd]][:])
     v = np.squeeze(ds.variables[v_name[sd]][:])
     if sd> 0:
@@ -114,6 +117,9 @@ def load_SD_nc_arctic2018(year, SD_name):
     longitude = ds.variables[lon_name[sd]][:]
     latitude = ds.variables[lat_name[sd]][:]
     depth = ds.variables[depth_name[sd]][:]
+    z0 = 6 # the top bin of 2018 & 2019 saildrone ADCP is at 6 m. It is determined by the depth of the transducer (-1.8 m) and the blanking distance (4.2 m).
+    dz = z0-np.min(depth[0])
+    depth = depth+dz
     u = np.squeeze(ds.variables[u_name[sd]][:])
     v = np.squeeze(ds.variables[v_name[sd]][:])
     print('shape of lon, lat, u: ',longitude.shape,latitude.shape,'shape of u: ',u.shape)
