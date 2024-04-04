@@ -51,8 +51,8 @@ def jday_to_datetime(jday, ref_dtime):
     else:
         print('input reference datetime needs to be a datetime.date object')
         return 'input reference datetime needs to be a datetime.date object'
-    if isinstance(jday, float):
-        sec_after_ref = jday*86400 # in sec
+    if isinstance(jday, float) or isinstance(jday, int) or isinstance(jday, np.int64):
+        sec_after_ref = float(jday)*86400 # in sec
         dtime_out = ref_dtime+datetime.timedelta(seconds=sec_after_ref)
         return dtime_out
     else:
@@ -65,9 +65,9 @@ def jday_to_datetime(jday, ref_dtime):
         # yearday = yday_int + day_frac
         # return np.array(year), np.array(yearday)
 
-print(1)
-print(jday_to_datetime(25000.25, datetime.datetime(1950,1,1)))
+# print(1)
+# print(jday_to_datetime([1], datetime.datetime(2018,12,31)))
 # print(2)
 # print(jday_to_datetime(250000.5, 100))
-print(3)
-print( jday_to_datetime([250000.5,2500.2], datetime.datetime(1950,1,1)) )
+# print(3)
+# print( jday_to_datetime([250000.5,2500.2], datetime.datetime(1950,1,1)) )

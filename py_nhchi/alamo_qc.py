@@ -140,7 +140,7 @@ def alamo_qc(fpin):
 
     if np.any( np.diff(fp['p_raw'][gg])==0 ):
         fp['testsfailed'][7] = 1
-        jj = ( np.diff(fp['p_raw'][gg])==0 )
+        jj = np.where( np.diff(fp['p_raw'][gg])==0 )[0]
         newv = np.repeat(4,jj.sum())
         if len(newv) > 0:
             fp['p_qc'][jj] = 4#np.max( np.concatenate( (fp['p_qc'][jj], newv) ) )
