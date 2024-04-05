@@ -28,3 +28,19 @@ def vectors_to_angle(a,b):
     rad = np.arccos(np.clip(cos,-1,1))
     degree = np.rad2deg(rad)
     return rad, degree, cos
+
+def lon2str(lon,decimals):
+    # input: longitude in -180~180 or 0~360 (has to be a value)
+    #        decimals: number of decimal places to round to
+    # output: longitude^oE or longitude^oW
+    if isinstance(lon,(float,int)):
+        lon = lon%360
+        if lon > 180:
+            lon = np.round( np.abs(lon-360),decimals=decimals )
+            lonstr = str(lon)+'W'
+        else: 
+            lon = np.round( lon,decimals=decimals )
+            lonstr = str(lon)+'E'
+        return lonstr
+    else:
+        print('input has to be either float or int')
