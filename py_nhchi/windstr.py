@@ -39,13 +39,18 @@ def ra_windstr_nc(u,v,roh):
         for jj in range(ln):
             U = np.sqrt( np.square(u[ii,jj]) + np.square(v[ii,jj])) # Wind speed
             if U <= 1:
-                  Cd=0.00218
+                  Cd = 0.00218
             elif (U > 1) | (U <= 3):
-                 Cd=(0.62+1.56/U)*0.001
+                 Cd = (0.62+1.56/U)*0.001
             elif (U > 3) | (U < 10):
-                 Cd=0.00114; 
+                 Cd = 0.00114; 
             else:
-                 Cd=(0.49+0.065*U)*0.001;
+                 Cd = (0.49+0.065*U)*0.001
             
-            Tx[ii, jj]=Cd*roh*U*u[ii, jj]# kg/m^3*m/s*m/s= N/m^2
-            Ty[ii, jj]=Cd*roh*U*v[ii, jj]
+            Tx[ii,jj]=Cd*roh*U*u[ii, jj]# kg/m^3*m/s*m/s= N/m^2
+            Ty[ii,jj]=Cd*roh*U*v[ii, jj]
+            print(U, Tx, Ty)
+
+    return Tx, Ty
+
+ra_windstr_nc(np.array([[0.01,0.1],[0.01,0.1]]),np.array([[0.015,0.15],[0.015,0.15]]),0)
