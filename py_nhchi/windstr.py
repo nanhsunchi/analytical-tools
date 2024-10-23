@@ -12,7 +12,7 @@ def ra_windstr_nc(u,v,roh):
     # INPUTS: 
     # u = Zonal wind component [m/s], must be 2D
     # v = Meridional wind component [m/s], must be 2D
-    #
+    # roh = air density in kg/m^3
     # OUTPUT: 
     # Tx = Zonal wind stress [N/m^2]
     # Ty = Meridional wind stress [N/m^2]
@@ -31,26 +31,39 @@ def ra_windstr_nc(u,v,roh):
     # Defining Constant 
     # roh=1.2; % kg/m^3, air density
     # Computation of Wind Stresses
-    lt, ln = u.shape
-    Tx = np.nan*np.ones( (lt, ln) )
-    Ty = Tx.copy()
+     if u.ndim == 1:
+          lt = len(u)
+          ln = 1
+     if u.ndim == 2:
+          lt, ln = u.shape
+     
+     Tx = np.nan*np.ones( (lt, ln) )
+     Ty = Tx.copy()
 
-    for ii in range(lt):
-        for jj in range(ln):
-            U = np.sqrt( np.square(u[ii,jj]) + np.square(v[ii,jj])) # Wind speed
-            if U <= 1:
-                  Cd = 0.00218
-            elif (U > 1) | (U <= 3):
-                 Cd = (0.62+1.56/U)*0.001
-            elif (U > 3) | (U < 10):
-                 Cd = 0.00114; 
-            else:
-                 Cd = (0.49+0.065*U)*0.001
-            
-            Tx[ii,jj]=Cd*roh*U*u[ii, jj]# kg/m^3*m/s*m/s= N/m^2
-            Ty[ii,jj]=Cd*roh*U*v[ii, jj]
-            print(U, Tx, Ty)
+     for ii in range(lt):
+          for jj in range(ln):
+               if u.ndim == 1:
+                    U = np.sqrt( np.square(u[ii]) + np.square(v[ii])) # Wind speed
+               if u.ndim == 2:
+                    U = np.sqrt( np.square(u[ii,jj]) + np.square(v[ii,jj])) # Wind speed
+               ###
+               if U <= 1:
+                    Cd = 0.00218
+               elif (U > 1) | (U <= 3):
+                    Cd = (0.62+1.56/U)*0.001
+               elif (U > 3) | (U < 10):
+                    Cd = 0.00114; 
+               else:
+                    Cd = (0.49+0.065*U)*0.001
+               ###
+               if u.ndim == 1:
+                    Tx[ii]=Cd*roh*U*u[ii]# kg/m^3*m/s*m/s= N/m^2
+                    Ty[ii]=Cd*roh*U*v[ii]
+               if u.ndim == 2:
+                    Tx[ii,jj]=Cd*roh*U*u[ii, jj]# kg/m^3*m/s*m/s= N/m^2
+                    Ty[ii,jj]=Cd*roh*U*v[ii, jj]
+               # print(U, Tx, Ty)
 
-    return Tx, Ty
+     return Tx, Ty
 
-ra_windstr_nc(np.array([[0.01,0.1],[0.01,0.1]]),np.array([[0.015,0.15],[0.015,0.15]]),0)
+# ra_windstr_nc(np.array([[0.01,0.1],[0.01,0.1]]),np.array([[0.015,0.15],[0.015,0.15]]),0)
