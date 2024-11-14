@@ -205,3 +205,37 @@ def bandpass(x,delt,lowcutt,higcutt,npole):
     # plt.savefig('data_2ndfilter_filtfilt.png',dpi=400,bbox_inches='tight',transparent='True')
 
     return w, minff, maxff, ff, hl
+
+def bandpass_sos(x,delt,lowcutt,higcutt,npole): ### "sos" should be used for general purpose filtering
+    # From Ren-Chieh's lienbandpass.m
+    # mybandpass.m calls lienbandpass.m. 
+    # The lienbandpass.m is the main bandpass filter
+    # BANDX = BANDPASS(X,DT,LCTIME,HCTIME,NPOLE,plotind,FILTERTYPE)
+    #               BANDX : BANDPASSED TIME SERIES
+    #                X : ORIGINAL TIME SERIES
+    #           LCTIME : LOWBOUND CUTOFF TIME     
+    #           HCTIME : HIGHBOUND CUTOFF TIME     
+    #            NPOLE : # OF POLES FOR THE NONLINEAR FILTER
+    ###------------------------------------------------------------
+    ### define the sampling frequency and cutoff frequency band ###
+    ###------------------------------------------------------------
+    mx = np.mean(x)
+    x= x-mx
+    fs = 1/delt
+    lowband = 2*delt/lowcutt
+    higband = 2*delt/higcutt
+    lband = [lowband, higband]
+    ###------------------------------------------------------------
+    ### design Butterworth filter                               ###
+    ###------------------------------------------------------------
+    sos = signal.butter(npole,lband,btype='bandpass',output='sos')
+    
+    ###------------------------------------------------------------
+    ### apply filter twice to avoid phase shift                 ###
+    ###------------------------------------------------------------
+    y = signal.sosfilt(sos,x)
+    z0 = y[::-1]
+    z = signal.sosfilt(sos,z0)
+    w = z[::-1]
+    
+    return w

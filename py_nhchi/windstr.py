@@ -64,6 +64,8 @@ def ra_windstr_nc(u,v,roh):
                     Ty[ii,jj]=Cd*roh*U*v[ii, jj]
                # print(U, Tx, Ty)
 
+     Tx = np.squeeze(Tx)
+     Ty = np.squeeze(Ty)
      return Tx, Ty
 
 # ra_windstr_nc(np.array([[0.01,0.1],[0.01,0.1]]),np.array([[0.015,0.15],[0.015,0.15]]),0)
