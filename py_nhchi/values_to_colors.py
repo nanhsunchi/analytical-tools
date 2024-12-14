@@ -1,6 +1,7 @@
 import numpy as np
-# import matplotlib
 from matplotlib import cm
+import matplotlib.pyplot as plt
+import matplotlib
 
 def values_to_rgba(values,ColormapName,vmin,vmax):
     ### Getting/ converting individual colors from a color map in matplotlib
@@ -27,6 +28,40 @@ def values_to_rgba(values,ColormapName,vmin,vmax):
     else: 
         print('function only deals with single value or 1D array or list.')
 
-# test = [0,1,2,3]
-# out = values_to_rgba(test,'gray',0,2)
-# print(out, type(out))
+def categorical_cmap(nc, nsc, cmap="tab10", continuous=False):
+    '''You may use the HSV system to obtain differently saturated and luminated colors for the same hue. 
+    Suppose you have at most 10 categories, then the tab10 map can be used to get a certain number of base colors. 
+    From those you can choose a couple of lighter shades for the subcategories.
+    
+    The following would be a function categorical_cmap, 
+    which takes as input the number of categories (nc) and the number of subcategories (nsc) and 
+    returns a colormap with nc*nsc different colors, where for each category there are nsc colors of same hue.
+    From https://stackoverflow.com/questions/47222585/matplotlib-generic-colormap-from-tab10
+    '''
+    if nc > plt.get_cmap(cmap).N:
+        raise ValueError("Too many categories for colormap.")
+    if continuous:
+        ccolors = plt.get_cmap(cmap)(np.linspace(0,1,nc))
+    else:
+        ccolors = plt.get_cmap(cmap)(np.arange(nc, dtype=int))
+    cols = np.zeros((nc*nsc, 3))
+    for i, c in enumerate(ccolors):
+        chsv = matplotlib.colors.rgb_to_hsv(c[:3])
+        arhsv = np.tile(chsv,nsc).reshape(nsc,3)
+        arhsv[:,1] = np.linspace(chsv[1],0.25,nsc)
+        arhsv[:,2] = np.linspace(chsv[2],1,nsc)
+        rgb = matplotlib.colors.hsv_to_rgb(arhsv)
+        cols[i*nsc:(i+1)*nsc,:] = rgb       
+    cmap = matplotlib.colors.ListedColormap(cols)
+    return cmap
+
+def truncate_colormap(cmap, minval=0.0, maxval=1.0, n=100):
+    ''' Extract a subset of a colormap as a new colormap in matplotlib
+    From and See example here: https://stackoverflow.com/questions/18926031/how-to-extract-a-subset-of-a-colormap-as-a-new-colormap-in-matplotlib
+    cmap = plt.get_cmap('jet')
+    new_cmap = truncate_colormap(cmap, 0.2, 0.8)
+    '''
+    new_cmap = matplotlib.colors.LinearSegmentedColormap.from_list(
+        'trunc({n},{a:.2f},{b:.2f})'.format(n=cmap.name, a=minval, b=maxval),
+        cmap(np.linspace(minval, maxval, n)))
+    return new_cmap
