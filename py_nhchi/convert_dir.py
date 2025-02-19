@@ -40,3 +40,18 @@ def rotate_origin_only(xy, radians):
     yy = -x * math.sin(radians) + y * math.cos(radians)
 
     return xx, yy
+
+def convert_dir_to_from(dir):
+    ''' input: dir is the direction to or direction from (in degrees) 
+                Take one number at a time.
+        output: direction from or direction to (in degrees) '''
+    if isinstance(dir, int) or isinstance(dir, float):
+        res = (dir + 180)%360
+        return res
+    elif isinstance(dir,np.ndarray):
+        res = (dir + 180)%360
+        return res
+    else:
+        print('conver_dir_to_from only takes integer or float input')
+
+# print( convert_vec_to_from(np.ma.ones((3,))))

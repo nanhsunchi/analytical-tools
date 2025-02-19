@@ -49,9 +49,9 @@ def ra_windstr_nc(u,v,roh):
                ###
                if U <= 1:
                     Cd = 0.00218
-               elif (U > 1) | (U <= 3):
+               elif (U > 1) & (U <= 3):
                     Cd = (0.62+1.56/U)*0.001
-               elif (U > 3) | (U < 10):
+               elif (U > 3) & (U < 10):
                     Cd = 0.00114; 
                else:
                     Cd = (0.49+0.065*U)*0.001
