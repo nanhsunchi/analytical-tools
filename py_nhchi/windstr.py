@@ -69,3 +69,18 @@ def ra_windstr_nc(u,v,roh):
      return Tx, Ty
 
 # ra_windstr_nc(np.array([[0.01,0.1],[0.01,0.1]]),np.array([[0.015,0.15],[0.015,0.15]]),0)
+
+def wind_adj2height_PL(u1, z1, z2):
+     ''' Adjust wind speeds from height, z1 (m), to height z2 (m) following a simple method descirbed by S.A. Hsu et al. (1994).
+      See https://www.ndbc.noaa.gov/faq/adjust_wind.shtml#:~:text=NDBC%20adjusts%20wind%20speeds%20to,that%20typical%20of%20ship%20anemometers.
+      This method was tested and found to compare favorably with the more elaborate method under near-neutral stability. 
+      This is the condition most frequently encountered at sea and occurs when air and water temperatures are not too far apart. 
+      The method, referred to as Power Law Method, is offered here for those who may want to explore the nature of the marine wind speed profile
+      without having to deal with the complexity of the W.T. Liu et al (1979) method that NDBC uses. 
+      
+      input: u1: float, int or array of wind speeds, or wind components (u, v). It could be negative. 
+      output u2: float/int or array of adjusted wind speeds or wind components. '''
+     z2_z1 = np.divide( z2, z1 )
+     u2 = np.multiply(u1, np.power(z2_z1,0.11))
+     return u2
+     
