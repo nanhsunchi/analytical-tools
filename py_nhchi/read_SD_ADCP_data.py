@@ -6,6 +6,26 @@ import datetime
 import os
 import cftime
 
+def load_SD_nc_arctic2019_LEV1QC(year, SDname):
+    ''' load saildrone Arctic 2019 ADCP data (nc files) with Level1 QC
+        units of u, v in cm/s 
+        time is timestamp (seconds since 1970/1/1)
+        iflag = 0 is data that pass Level 1 QC. The rest is flagged. 
+        Detail of the flags see nc files. '''
+    path = os.path.expanduser('~/Documents/projects/sd-missions/arctic-'+year+'/QC_adcp/')
+    SDnames = ['1036','1037']
+    vars_read = ['time','depth','longitude','latitude','vel_east','vel_north','iflag']
+    dict_return = {}
+    if SDname in SDnames:
+        ds = nc.Dataset(path+'adcp-LEV1QC-'+year+'-SD'+SDname+'.nc')
+        # print(ds)
+        for var in vars_read:
+            data = np.squeeze( np.ma.getdata(ds.variables[var][:]) )
+            dict_return[var] = data
+        return dict_return
+        
+# test = load_SD_nc_arctic2019_LEV1QC('2019','1036')
+# print(test)
 def load_SD_nc_arctic2019(year, SD_name):
     ### load saildrone Arctic 2019 ADCP trajectory (in netcdf) data files to masked np arrays
     ### units of u, v in cm/s
