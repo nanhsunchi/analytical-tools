@@ -17,7 +17,7 @@ def load_SD_nc_arctic2019_LEV1QC(year, SDname):
     vars_read = ['time','depth','longitude','latitude','vel_east','vel_north','iflag']
     dict_return = {}
     if SDname in SDnames:
-        ds = nc.Dataset(path+'adcp-LEV1QC-'+year+'-SD'+SDname+'.nc')
+        ds = nc.Dataset(path+'adcp-LEV1QC-'+year+'-SD'+SDname+'_20190630-0710.nc')
         # print(ds)
         for var in vars_read:
             data = np.squeeze( np.ma.getdata(ds.variables[var][:]) )
