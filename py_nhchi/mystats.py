@@ -239,3 +239,30 @@ def bandpass_sos(x,delt,lowcutt,higcutt,npole): ### "sos" should be used for gen
     w = z[::-1]
     
     return w
+
+def compdemodfun(x,npts,dt,f,modperiod):
+    ''' Complext Demodulation for the 1D time series 
+
+    amp, pha = compdemodfun(x, npts, dt, f, modperiod) 
+    x : original time series
+    npts : total number of points
+    dt : sampling interval in hours
+    f : centering frequency in cph
+    modperiod : modulation period
+    
+    '''
+    x = np.array( x )
+    # print('input type:',type(x),x.shape)
+    if x.ndim > 1:
+        print('compdemodfun can only deal with 1D vector at a time')
+        return "Input is not a 1D time series"
+    # test = np.cos( 2*np.pi*np.arange(0,npts)*dt*f )
+    # print('test type:',type(test), test.shape)
+    # print(np.multiply(x,test).shape)
+    xcos = np.multiply(x, np.cos( 2*np.pi*np.arange(0,npts)*dt*f ))
+    xsin = np.multiply(x, np.sin( 2*np.pi*np.arange(0,npts)*dt*f ))
+    bxcos, _,_ = lpass_NaN(xcos,dt,modperiod,2)
+    bxsin, _,_ = lpass_NaN(xsin,dt,modperiod,2)
+    amp = np.sqrt( np.square(bxcos) + np.square(bxsin) )
+    pha = np.arctan2(bxsin, bxcos)*180/np.pi
+    return amp, pha

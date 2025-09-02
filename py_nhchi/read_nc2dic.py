@@ -47,10 +47,11 @@ def load_nc2dic(filename, sticker, basetime, timedelta):
                 fillvalue = data_ma.get_fill_value()
                 shape = data_ma.shape
                 print(key, shape, data_ma.dtype, 'fillvalue=',fillvalue)
-                ifill = (np.ma.getmask(data_ma)) | (np.abs(data_ma>= 1e20))
                 data = data_ma
-                data[ifill] = np.nan
-                data = np.ma.getdata( data )
+                if ~np.isnan( fillvalue ):
+                    ifill = (np.ma.getmask(data_ma)) | (np.abs(data_ma>= 1e20))
+                    data[ifill] = np.nan
+                # data = np.ma.getdata( data )
                 dic[var] = data
                 ''' add datetime to dictionary '''
                 if 'time' in key.lower():
